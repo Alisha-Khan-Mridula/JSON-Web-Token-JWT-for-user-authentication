@@ -6,7 +6,9 @@ from functools import wraps
 app = Flask(__name__)
 
 #Secrect Key
-app.config['SECRET_kEY'] = '57de392eaf3c4c1fa6a63ba95eb57f68' 
+#app.config['SECRET_kEY'] = '57de392eaf3c4c1fa6a6333ba95eb57f68' 
+
+app.secret_key = '57de392eaf3c4c1fa6a6333ba95eb57f68'
 
 #JWT store the token in client side
 def token_required(func):
@@ -21,8 +23,8 @@ def token_required(func):
           
         except:
             return jsonify({'Alert!': 'Invalid Token'})
-        
-        return decorated
+        return func(*args, **kwargs)
+    return decorated
         
 
 
@@ -46,7 +48,7 @@ def public():
 @app.route('/auth')
 @token_required 
 def auth():
-    return 'JWT is verified. Welcome to Dashboard'  
+    return 'JWT is verified.'  
 
 
 #Verified user name and password , then login
@@ -54,12 +56,10 @@ def auth():
 def userLogin():
     if request.form['username'] and request.form['email'] and request.form['number'] and request.form['password'] == '23234':
         session['logged_in'] = True
-        token = jwt.encode({
-          'user': request.form['username'],
-          'expiration' : str(datetime.utcnow()+ timedelta(seconds=60))
-        },
-        app.config['SECRET_KEY'])
-        return jsonify({'token': token.decode('utf-8')})   
+        token = jwt.encode({'user': request.form['username'],'expiration' : str(datetime.utcnow()+ timedelta(seconds=60))},
+        #app.config['SECRET_KEY'])
+        app.secret_key)
+        return jsonify({'token': token})   
     else: 
         return make_response('Verfication Failed', 403,{'WWW-Authenticate': 'Basic realm:Authentication Failed!!'}) 
     
