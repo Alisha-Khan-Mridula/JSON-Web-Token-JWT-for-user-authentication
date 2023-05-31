@@ -50,7 +50,7 @@ def public():
     return  'For Public'
 
 #For authenticated users
-@app.route('/pub', methods = ['GET'])
+@app.route('/auth', methods = ['GET'])
 @token_required 
 def auth():
     return 'JWT is verified.'  
